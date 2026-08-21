@@ -1,0 +1,1 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Página não encontrada</title>@vite(['resources/css/app.css'])</head><body class="theme-default"><main class="section section-dark"><div class="shell cta-section"><h1>404</h1><p>A página que você procura não existe.</p><a class="button" href="{{ route('home') }}">Voltar ao início</a></div></main></body></html>

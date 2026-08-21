@@ -1,0 +1,1 @@
+<section class="section section-dark cta-section"><div class="shell"><h2>{{ $content['title'] ?? '' }}</h2><p>{{ $content['text'] ?? '' }}</p><a class="button hero-button" href="{{ $content['button_url'] ?? '#' }}" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> {{ $content['button'] ?? '' }}</a></div></section>
