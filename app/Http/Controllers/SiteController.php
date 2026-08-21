@@ -4,24 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use App\Services\SettingService;
+use App\Services\SiteCache;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class SiteController extends Controller
 {
-    public function __construct(private readonly SettingService $settings) {}
+    public function __construct(private readonly SettingService $settings, private readonly SiteCache $cache) {}
     public function home(): View|Response
     {
-        $slug = $this->settings->all()['home_page'][0] ?? 'inicio';
-        $page = Page::with(['sections', 'seo'])->where('slug', $slug)->first();
+        $site = $this->settings->all();
+        $slug = $site['home_page'][0] ?? 'inicio';
+        $page = $this->cache->page($slug);
         abort_unless($page?->isPublished(), 404);
-        return view('pages.show', ['page' => $page, 'site' => $this->settings->all()]);
+        return view('pages.show', ['page' => $page, 'site' => $site]);
     }
     public function page(string $slug): View
     {
-        $page = Cache::remember('page:'.$slug, 300, fn () => Page::with(['sections', 'seo'])->where('slug', $slug)->firstOrFail());
-        abort_unless($page->isPublished(), 404); return view('pages.show', ['page' => $page, 'site' => $this->settings->all()]);
+        $page = $this->cache->page($slug);
+        abort_unless($page?->isPublished(), 404);
+        return view('pages.show', ['page' => $page, 'site' => $this->settings->all()]);
     }
     public function preview(Page $page): View { abort_unless(auth()->check(), 403); return view('pages.show', ['page' => $page->load(['sections', 'seo']), 'site' => $this->settings->all(), 'preview' => true]); }
     public function sitemap(): Response

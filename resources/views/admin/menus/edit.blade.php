@@ -1,1 +1,51 @@
-@extends('layouts.admin') @section('title','Menu') @section('content')<div class="page-heading"><div><h1>Menu principal</h1><p class="text-muted">Links de páginas, âncoras e URLs externas.</p></div></div><form method="post" action="{{ route('admin.menu.update') }}">@csrf @method('PUT')<div class="admin-card"><div class="field"><label>Nome</label><input name="name" value="{{ $menu->name }}" required></div><h3>Itens</h3>@foreach($menu->items as $i=>$item)<div class="menu-row" style="display:grid;grid-template-columns:1fr 1.2fr 1fr 100px 80px;gap:10px;align-items:end;margin-bottom:12px"><div class="field"><label>Label</label><input name="items[{{ $i }}][label]" value="{{ $item->label }}" required></div><div class="field"><label>URL / âncora</label><input name="items[{{ $i }}][url]" value="{{ $item->url }}"></div><div class="field"><label>Página</label><select name="items[{{ $i }}][page_id]"><option value="">Nenhuma</option>@foreach($pages as $page)<option value="{{ $page->id }}" @selected($item->page_id===$page->id)>{{ $page->title }}</option>@endforeach</select></div><div class="field"><label>Target</label><select name="items[{{ $i }}][target]"><option value="_self" @selected($item->target==='_self')>Mesma</option><option value="_blank" @selected($item->target=='_blank')>Nova</option></select></div><label class="check"><input type="checkbox" name="items[{{ $i }}][active]" value="1" @checked($item->active)> Ativo</label></div>@endforeach<div class="form-actions"><button class="admin-button" type="submit">Salvar menu</button></div></div></form>@endsection
+@extends('layouts.admin')
+@section('title', 'Menu')
+@section('content')
+<div class="page-heading">
+    <div>
+        <h1>Menu principal</h1>
+        <p class="text-muted">Links do cabeçalho: páginas, âncoras ou URLs externas.</p>
+    </div>
+</div>
+<form method="post" action="{{ route('admin.menu.update') }}" id="menu-form">
+    @csrf @method('PUT')
+    <div class="admin-card">
+        <div class="field"><label>Nome</label><input name="name" value="{{ $menu->name }}" required></div>
+        <h3>Itens</h3>
+        <div id="menu-items">
+            @forelse($menu->items as $i => $item)
+                @include('admin.menus.item', ['i' => $i, 'item' => $item, 'pages' => $pages])
+            @empty
+                @include('admin.menus.item', ['i' => 0, 'item' => null, 'pages' => $pages])
+            @endforelse
+        </div>
+        <div class="form-actions" style="justify-content:space-between">
+            <button type="button" class="admin-button secondary" id="add-menu-item"><i class="fas fa-plus"></i> Adicionar item</button>
+            <button class="admin-button" type="submit">Salvar menu</button>
+        </div>
+    </div>
+</form>
+<template id="menu-item-template">
+    @include('admin.menus.item', ['i' => '__INDEX__', 'item' => null, 'pages' => $pages])
+</template>
+<script>
+(function(){
+    var list = document.getElementById('menu-items');
+    var tpl = document.getElementById('menu-item-template');
+    document.getElementById('add-menu-item').addEventListener('click', function(){
+        var index = list.querySelectorAll('.menu-row').length;
+        list.insertAdjacentHTML('beforeend', tpl.innerHTML.replace(/__INDEX__/g, index));
+    });
+    list.addEventListener('click', function(e){
+        var btn = e.target.closest('[data-remove-item]');
+        if (!btn) return;
+        var row = btn.closest('.menu-row');
+        if (list.querySelectorAll('.menu-row').length === 1) {
+            row.querySelectorAll('input[type="text"],select').forEach(function(el){ el.value = ''; });
+            return;
+        }
+        row.remove();
+    });
+})();
+</script>
+@endsection

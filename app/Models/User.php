@@ -27,6 +27,27 @@ class User extends Authenticatable
         return $this->status === 'active';
     }
 
+    public function roleLabel(): string
+    {
+        return $this->role === 'administrator' ? 'Administrador' : 'Editor';
+    }
+
+    public function statusLabel(): string
+    {
+        return $this->isActive() ? 'Ativo' : 'Inativo';
+    }
+
+    public function initials(): string
+    {
+        $parts = preg_split('/\s+/', trim((string) $this->name)) ?: [];
+        $first = mb_substr($parts[0] ?? 'U', 0, 1);
+        if (count($parts) < 2) {
+            return mb_strtoupper(mb_substr($this->name ?: 'U', 0, 2));
+        }
+
+        return mb_strtoupper($first.mb_substr($parts[count($parts) - 1], 0, 1));
+    }
+
     /**
      * Get the attributes that should be cast.
      *

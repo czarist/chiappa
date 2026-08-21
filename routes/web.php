@@ -1,14 +1,14 @@
 <?php
 
 use App\Http\Controllers\{AuthController, SiteController};
-use App\Http\Controllers\Admin\{DashboardController, PageController, SettingsController, MediaController, UserController, MenuController};
+use App\Http\Controllers\Admin\{DashboardController, PageController, SettingsController, MediaController, UserController, MenuController, MercadoLivreController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'home'])->name('home');
 Route::get('/sitemap.xml', [SiteController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [SiteController::class, 'robots'])->name('robots');
-Route::get('/login', [AuthController::class, 'create'])->middleware('guest')->name('login');
-Route::post('/login', [AuthController::class, 'store'])->middleware('guest')->name('login.store');
+Route::get('/chiappa-admin', [AuthController::class, 'create'])->middleware('guest')->name('login');
+Route::post('/chiappa-admin', [AuthController::class, 'store'])->middleware('guest')->name('login.store');
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
@@ -24,12 +24,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('menu', [MenuController::class, 'update'])->name('menu.update');
     Route::get('media', [MediaController::class, 'index'])->name('media.index');
     Route::post('media', [MediaController::class, 'store'])->name('media.store');
+    Route::post('media/from-url', [MediaController::class, 'storeFromUrl'])->name('media.from-url');
     Route::delete('media/{medium}', [MediaController::class, 'destroy'])->name('media.destroy');
+    Route::post('cache/clear', [SettingsController::class, 'clearCache'])->name('cache.clear');
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::get('users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('users', [UserController::class, 'store'])->name('users.store');
+    Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('mercadolivre/connect', [MercadoLivreController::class, 'connect'])->name('mercadolivre.connect');
+    Route::get('mercadolivre/callback', [MercadoLivreController::class, 'callback'])->name('mercadolivre.callback');
 });
 
 Route::get('/preview/{page}', [SiteController::class, 'preview'])->name('pages.preview');

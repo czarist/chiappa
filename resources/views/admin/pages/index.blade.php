@@ -1,1 +1,42 @@
-@extends('layouts.admin') @section('title','Páginas') @section('content')<div class="page-heading"><div><h1>Páginas</h1><p class="text-muted">Gerencie páginas e seções publicadas.</p></div><a class="admin-button" href="{{ route('admin.pages.create') }}"><i class="fas fa-plus"></i> Nova página</a></div><div class="admin-card"><table class="admin-table"><tr><th>Título</th><th>Slug</th><th>Status</th><th>Atualizada</th><th>Ações</th></tr>@forelse($pages as $page)<tr><td><strong>{{ $page->title }}</strong></td><td>/{{ $page->slug }}</td><td><span class="badge {{ $page->status }}">{{ $page->status }}</span></td><td>{{ $page->updated_at->format('d/m/Y H:i') }}</td><td class="actions"><a class="icon-action" href="{{ route('admin.pages.edit',$page) }}" title="Editar"><i class="fas fa-pen"></i></a><a class="icon-action" href="{{ route('pages.preview',$page) }}" target="_blank" title="Preview"><i class="fas fa-eye"></i></a><form method="post" action="{{ route('admin.pages.duplicate',$page) }}">@csrf<button class="icon-action" title="Duplicar"><i class="fas fa-copy"></i></button></form>@if($page->status !== 'published')<form method="post" action="{{ route('admin.pages.publish',$page) }}">@csrf<button class="icon-action" title="Publicar"><i class="fas fa-upload"></i></button></form>@endif<form method="post" action="{{ route('admin.pages.destroy',$page) }}" onsubmit="return confirm('Excluir esta página?')">@csrf @method('DELETE')<button class="icon-action" title="Excluir"><i class="fas fa-trash"></i></button></form></td></tr>@empty<tr><td colspan="5" class="empty">Nenhuma página encontrada.</td></tr>@endforelse</table>{{ $pages->links() }}</div>@endsection
+@extends('layouts.admin')
+@section('title', 'Páginas')
+@section('content')
+<div class="page-heading">
+    <div>
+        <h1>Páginas</h1>
+        <p class="text-muted">Gerencie a home e as demais páginas do site.</p>
+    </div>
+    <a class="admin-button" href="{{ route('admin.pages.create') }}"><i class="fas fa-plus"></i> Nova página</a>
+</div>
+<div class="admin-card">
+    <table class="admin-table">
+        <tr>
+            <th>Título</th>
+            <th>Slug</th>
+            <th>Status</th>
+            <th>Atualizada</th>
+            <th>Ações</th>
+        </tr>
+        @forelse($pages as $page)
+            <tr>
+                <td><strong>{{ $page->title }}</strong></td>
+                <td>/{{ $page->slug }}</td>
+                <td><span class="badge {{ $page->status }}">{{ ['published' => 'Publicado', 'draft' => 'Rascunho', 'scheduled' => 'Agendado'][$page->status] ?? $page->status }}</span></td>
+                <td>{{ $page->updated_at->format('d/m/Y H:i') }}</td>
+                <td class="actions">
+                    <a class="icon-action" href="{{ route('admin.pages.edit', $page) }}" title="Editar"><i class="fas fa-pen"></i></a>
+                    <a class="icon-action" href="{{ route('pages.preview', $page) }}" target="_blank" title="Preview"><i class="fas fa-eye"></i></a>
+                    <form method="post" action="{{ route('admin.pages.duplicate', $page) }}">@csrf<button class="icon-action" title="Duplicar"><i class="fas fa-copy"></i></button></form>
+                    @if($page->status !== 'published')
+                        <form method="post" action="{{ route('admin.pages.publish', $page) }}">@csrf<button class="icon-action" title="Publicar"><i class="fas fa-upload"></i></button></form>
+                    @endif
+                    <form method="post" action="{{ route('admin.pages.destroy', $page) }}" onsubmit="return confirm('Excluir esta página?')">@csrf @method('DELETE')<button class="icon-action danger" title="Excluir"><i class="fas fa-trash"></i></button></form>
+                </td>
+            </tr>
+        @empty
+            <tr><td colspan="5" class="empty">Nenhuma página encontrada.</td></tr>
+        @endforelse
+    </table>
+    {{ $pages->links() }}
+</div>
+@endsection

@@ -14,8 +14,13 @@ class PageRequest extends FormRequest
             'status' => ['required', Rule::in(['draft', 'published', 'scheduled'])], 'template' => ['required', 'string', 'max:80'],
             'published_at' => ['nullable', 'date'], 'featured_image' => ['nullable', 'string', 'max:500'],
             'seo' => ['array'], 'seo.title' => ['nullable', 'string', 'max:180'], 'seo.description' => ['nullable', 'string', 'max:320'],
+            'seo.keywords' => ['nullable', 'string', 'max:255'], 'seo.author' => ['nullable', 'string', 'max:120'],
             'seo.canonical_url' => ['nullable', 'url'], 'seo.og_title' => ['nullable', 'string', 'max:180'], 'seo.og_description' => ['nullable', 'string', 'max:320'],
-            'seo.og_image' => ['nullable', 'string', 'max:500'], 'seo.indexable' => ['nullable', 'boolean'], 'seo.followable' => ['nullable', 'boolean'],
+            'seo.og_image' => ['nullable', 'string', 'max:500'], 'seo.og_image_alt' => ['nullable', 'string', 'max:180'],
+            'seo.twitter_card' => ['nullable', Rule::in(['summary', 'summary_large_image'])],
+            'seo.twitter_title' => ['nullable', 'string', 'max:180'], 'seo.twitter_description' => ['nullable', 'string', 'max:320'],
+            'seo.twitter_image' => ['nullable', 'string', 'max:500'],
+            'seo.indexable' => ['nullable', 'boolean'], 'seo.followable' => ['nullable', 'boolean'],
             'sections_json' => ['nullable', 'json'], 'sections' => ['nullable', 'array'], 'sections.*.id' => ['nullable', 'integer'], 'sections.*.type' => ['required', 'string'],
             'sections.*.active' => ['nullable', 'boolean'], 'sections.*.content' => ['nullable', 'array'], 'sections.*.settings' => ['nullable', 'array']];
     }
