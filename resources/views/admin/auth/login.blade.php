@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/admin.css'])
+    @production
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    @endproduction
 </head>
 <body class="login-page">
 <form class="login-box" method="post" action="{{ route('login.store', absolute: false) }}">
@@ -26,11 +29,17 @@
     <label class="check">
         <input type="checkbox" name="remember" value="1"> Lembrar acesso
     </label>
+    @production
+        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+    @endproduction
     <button class="admin-button" type="submit">Entrar</button>
     @if (session('status'))
         <p class="error-text">{{ session('status') }}</p>
     @endif
     @error('email')
+        <p class="error-text">{{ $message }}</p>
+    @enderror
+    @error('g-recaptcha-response')
         <p class="error-text">{{ $message }}</p>
     @enderror
 </form>
