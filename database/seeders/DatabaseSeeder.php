@@ -10,9 +10,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(['email' => env('ADMIN_EMAIL', 'admin@example.com')], ['name' => env('ADMIN_NAME', 'Administrador'), 'password' => env('ADMIN_PASSWORD', 'change-me'), 'role' => 'administrator', 'status' => 'active']);
-        foreach ([['name' => 'Padrão', 'slug' => 'default', 'settings' => ['body' => 'dark']], ['name' => 'Cinza', 'slug' => 'gray', 'settings' => ['body' => 'gray']], ['name' => 'Claro', 'slug' => 'light', 'settings' => ['body' => 'light']]] as $i => $theme) Theme::updateOrCreate(['slug' => $theme['slug']], $theme + ['active' => $i === 0]);
+        foreach ([['name' => 'Padrão', 'slug' => 'default', 'settings' => ['body' => 'dark']], ['name' => 'Cinza', 'slug' => 'gray', 'settings' => ['body' => 'gray']], ['name' => 'Claro', 'slug' => 'light', 'settings' => ['body' => 'light']]] as $i => $theme) Theme::firstOrCreate(['slug' => $theme['slug']], $theme + ['active' => $i === 0]);
         $page = Page::updateOrCreate(['slug' => 'inicio'], ['title' => 'Chiappa Auto Peças e Serviços', 'status' => 'published', 'template' => 'default', 'published_at' => now()]);
-        $page->seo()->updateOrCreate([], [
+        $page->seo()->firstOrCreate([], [
             'title' => 'Chiappa Auto Peças e Serviços | Canoas/RS',
             'description' => 'Auto peças de qualidade e oficina especializada em Canoas/RS.',
             'keywords' => 'auto peças, oficina mecânica, Canoas, freios, suspensão, Chiappa',
@@ -26,8 +26,8 @@ class DatabaseSeeder extends Seeder
             'twitter_card' => 'summary_large_image',
         ]);
         if ($page->sections()->count() === 0) foreach ($this->sections() as $position => $section) $page->sections()->create(['type' => $section['type'], 'position' => $position, 'content' => $section['content']]);
-        Setting::updateOrCreate(['key' => 'site'], ['value' => ['name' => 'Chiappa Auto Peças e Serviços', 'description' => 'Auto peças de qualidade e oficina especializada em Canoas/RS.', 'logo' => '/assets/logo.png', 'favicon' => '/assets/favicon.svg', 'phone' => '(51) 98453-1794', 'whatsapp' => '5551984531794', 'email' => '', 'address' => 'Rua Cristóvão Colombo, 33 - Niterói, Canoas/RS - CEP 92.110-450', 'instagram' => 'https://www.instagram.com/chiappa.autopecas/', 'copyright' => '© 2026 Chiappa Auto Peças e Serviços. Todos os direitos reservados.', 'url' => env('APP_URL', 'http://localhost')]]);
-        Setting::updateOrCreate(['key' => 'home_page'], ['value' => ['inicio']]);
+        Setting::firstOrCreate(['key' => 'site'], ['value' => ['name' => 'Chiappa Auto Peças e Serviços', 'description' => 'Auto peças de qualidade e oficina especializada em Canoas/RS.', 'logo' => '/assets/logo.png', 'favicon' => '/assets/favicon.svg', 'phone' => '(51) 98453-1794', 'whatsapp' => '5551984531794', 'email' => '', 'address' => 'Rua Cristóvão Colombo, 33 - Niterói, Canoas/RS - CEP 92.110-450', 'instagram' => 'https://www.instagram.com/chiappa.autopecas/', 'copyright' => '© 2026 Chiappa Auto Peças e Serviços. Todos os direitos reservados.', 'url' => env('APP_URL', 'http://localhost')]]);
+        Setting::firstOrCreate(['key' => 'home_page'], ['value' => ['inicio']]);
         $menu = Menu::firstOrCreate(['location' => 'primary'], ['name' => 'Menu principal']);
         if ($menu->items()->count() === 0) foreach ([['label' => 'Início', 'url' => '#inicio'], ['label' => 'Serviços', 'url' => '#servicos'], ['label' => 'Contato', 'url' => '#contato']] as $position => $item) $menu->items()->create($item + ['position' => $position, 'target' => '_self']);
     }

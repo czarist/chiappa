@@ -46,6 +46,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "${PMA_FORWARD_PORT:-8081}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
 volumes:
   mysql_data:
   storage_data:
